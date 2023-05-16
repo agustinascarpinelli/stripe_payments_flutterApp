@@ -1,15 +1,18 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:stripe_pay/bloc/payment/payment_bloc.dart';
+import 'package:stripe_pay/services/stripe_services.dart';
+
+import '../helpers/helpers.dart';
 
 class TotalPayButton extends StatelessWidget {
   const TotalPayButton({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final payBloc = BlocProvider.of<PaymentBloc>(context).state;
     final width = MediaQuery.of(context).size.width;
     return Container(
       width: width,
@@ -19,7 +22,7 @@ class TotalPayButton extends StatelessWidget {
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(30), topRight: Radius.circular(30))),
       child: Padding(
-        padding: const EdgeInsets.only(left: 50,right: 50),
+        padding: const EdgeInsets.only(left: 50, right: 50),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -29,23 +32,20 @@ class TotalPayButton extends StatelessWidget {
               children: [
                 Column(
                   children: [
-                    Text(
+                    const Text(
                       'Total :',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                    Text('250.55 USD', style: TextStyle(fontSize: 20))
+                    Text('${payBloc.amountToPay} ${payBloc.currency}',
+                        style: const TextStyle(fontSize: 20))
                   ],
                 ),
-                
               ],
             ),
-            BlocBuilder<PaymentBloc,PaymentState>(
-              builder: ((context, state) {
-                return _Button(state:state);
-              })
-              
-              ),
-           
+            BlocBuilder<PaymentBloc, PaymentState>(builder: ((context, state) {
+              return _Button(state: state);
+            })),
           ],
         ),
       ),
@@ -57,16 +57,38 @@ class _Button extends StatelessWidget {
   final PaymentState state;
 
   const _Button({super.key, required this.state});
-@override
-Widget build (BuildContext context){
-  return state.activeCard? buildButtonCard(context)
-  :buildAppleAndGooglePay(context);
-}
-
+  @override
+  Widget build(BuildContext context) {
+    return state.activeCard
+        ? buildButtonCard(context)
+        : buildAppleAndGooglePay(context);
+  }
 
   Widget buildButtonCard(BuildContext context) {
     return MaterialButton(
-      onPressed: () {},
+      onPressed: () async {
+        showLoading(context);
+        final payBloc = BlocProvider.of<PaymentBloc>(context).state;
+        final stripeService = StripeService();
+        int expMonth =
+            int.parse(payBloc.cardSelected!.expiracyDate.substring(0, 2));
+        int expYear = int.parse(payBloc.cardSelected!.expiracyDate
+            .substring(payBloc.cardSelected!.expiracyDate.length - 2));
+        final res = await stripeService.payWithExistCard(
+            payBloc.amountToPay,
+            payBloc.currency,
+            payBloc.cardSelected!.cardNumber,
+            expMonth,
+            expYear,
+            payBloc.cardSelected!.cvv);
+        Navigator.pop(context);
+        if (res.ok) {
+          showCustomAlert(context, 'Successfull payment', '');
+        } else {
+          print(res.msg);
+          showCustomAlert(context, 'Something went wrong', res.msg!);
+        }
+      },
       height: 45,
       minWidth: 100,
       shape: const StadiumBorder(),
@@ -74,7 +96,7 @@ Widget build (BuildContext context){
       color: const Color(0xff191A20),
       child: Row(children: const [
         Icon(
-         FontAwesomeIcons.solidCreditCard,
+          FontAwesomeIcons.solidCreditCard,
           color: Colors.white,
         ),
         Text(
@@ -84,9 +106,20 @@ Widget build (BuildContext context){
       ]),
     );
   }
-   Widget buildAppleAndGooglePay(BuildContext context) {
+
+  Widget buildAppleAndGooglePay(BuildContext context) {
     return MaterialButton(
-      onPressed: () {},
+      onPressed: () async {
+        final stripeService = StripeService();
+        final payBloc = BlocProvider.of<PaymentBloc>(context).state;
+        final res = await stripeService.payWithApplePayOrGooglePay(
+            amount: payBloc.amountToPay, currency: payBloc.currency);
+        if (res.ok) {
+          return;
+        } else {
+          showCustomAlert(context, 'Something went wrong', res.msg!);
+        }
+      },
       height: 45,
       minWidth: 100,
       shape: const StadiumBorder(),
@@ -94,9 +127,7 @@ Widget build (BuildContext context){
       color: const Color(0xff191A20),
       child: Row(children: [
         Icon(
-          Platform.isAndroid
-              ? FontAwesomeIcons.google
-              : FontAwesomeIcons.apple,
+          Platform.isAndroid ? FontAwesomeIcons.google : FontAwesomeIcons.apple,
           color: Colors.white,
         ),
         const Text(

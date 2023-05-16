@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_credit_card/credit_card_brand.dart';
 import 'package:flutter_credit_card/flutter_credit_card.dart';
+import 'package:stripe_pay/bloc/payment/payment_bloc.dart';
 import 'package:stripe_pay/helpers/helpers.dart';
 
 import '../services/stripe_services.dart';
@@ -124,8 +126,7 @@ class AddCardState extends State<AddCard> {
                         margin: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
-                         color: Color(0xff54535A),
-                      
+                          color: Color(0xff54535A),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 15),
@@ -153,15 +154,16 @@ class AddCardState extends State<AddCard> {
 
   void _onValidate() async {
     if (formKey.currentState!.validate()) {
-     showLoading(context);
+      showLoading(context);
       final stripeService = StripeService();
-
-      final response =
-          await stripeService.addNewCard('300','USD','5263962271253926', 05, 2026, '412');
-           Navigator.pop(context);
+      final payBloc = BlocProvider.of<PaymentBloc>(context).state;
+      int expMonth = int.parse(expiryDate.substring(0, 2));
+      int expYear = int.parse(expiryDate.substring(expiryDate.length - 2));
+      final response = await stripeService.payWithExistCard(payBloc.amountToPay,
+          payBloc.currency, cardNumber, expMonth, expYear, cvvCode);
+      Navigator.pop(context);
       if (response.ok) {
-        showCustomAlert(context, 'Card added successfully',
-            'You can pay with this card now');
+        showCustomAlert(context, 'Successfull payment', '');
       } else {
         print(response.msg);
         showCustomAlert(context, 'Something went wrong', response.msg!);
@@ -180,10 +182,4 @@ class AddCardState extends State<AddCard> {
       isCvvFocused = creditCardModel.isCvvFocused;
     });
   }
-  
-
-  
-
- 
- 
 }

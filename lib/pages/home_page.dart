@@ -29,7 +29,9 @@ class HomeScreen extends StatelessWidget {
             IconButton(
              splashColor: Colors.transparent,
                 onPressed: ()async {
-                 Navigator.pushNamed(context, 'addCard');
+                final stripeService=StripeService();
+                final payBloc=BlocProvider.of<PaymentBloc>(context).state;
+                await stripeService.payWithNewCard(payBloc.amountToPay, payBloc.currency);
 
                 },
 

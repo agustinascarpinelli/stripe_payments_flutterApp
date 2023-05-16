@@ -10,21 +10,35 @@ showLoading (BuildContext context){
     )
     );
 }
-
-showCustomAlert (BuildContext context,String title, String msg){
+showCustomAlert(BuildContext context, String title, String msg) {
   showDialog(
     context: context,
-     builder: (_)=>AlertDialog(
-      title: Center(child: Text (title)),
-      content: Center(child: Text(msg)),
-      actions: [
-        MaterialButton(
-          onPressed: (){
-            Navigator.of(context).pop();          },
-          child: const Text('Ok'),
-          )
-      ],
-     )
-     );
-
+    builder: (_) => AlertDialog(
+      content: SingleChildScrollView(
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.8,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Center(child: Text(title)),
+              const SizedBox(height: 10),
+              Center(child: Text(msg)),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  MaterialButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Ok'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
 }
