@@ -17,7 +17,7 @@ class HomeScreen extends StatelessWidget {
     final blocPayment = BlocProvider.of<PaymentBloc>(context);
     bool isPortraitOrientation() {
       final orientation =
-          MediaQueryData.fromWindow(WidgetsBinding.instance.window).orientation;
+          MediaQueryData.fromView(WidgetsBinding.instance.window).orientation;
       return orientation == Orientation.portrait;
     }
 

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:stripe_pay/bloc/payment/payment_bloc.dart';
 import 'package:stripe_pay/pages/addCard.dart';
 import 'package:stripe_pay/pages/card_page.dart';

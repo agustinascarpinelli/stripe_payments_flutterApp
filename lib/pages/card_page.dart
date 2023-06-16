@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_credit_card/credit_card_widget.dart';
 
 import '../bloc/payment/payment_bloc.dart';
-import '../models/credit_card_model.dart';
 import '../widgets/total_pay_button.dart';
 
 class CardScreen extends StatelessWidget {
@@ -37,11 +36,11 @@ class CardScreen extends StatelessWidget {
                 cardHolderName: card.cardHolderName,
                  cvvCode: card.cvv,
                   showBackView: false,
-                   onCreditCardWidgetChange:(CreditCardBrand ) {  }),
+                   onCreditCardWidgetChange:(creditCardBrand ) {  }),
           ),
 
 
-      Positioned(
+      const Positioned(
           bottom: 0,
           child:TotalPayButton()
           )

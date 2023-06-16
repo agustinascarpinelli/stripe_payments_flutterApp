@@ -81,6 +81,7 @@ class _Button extends StatelessWidget {
             expMonth,
             expYear,
             payBloc.cardSelected!.cvv);
+        // ignore: use_build_context_synchronously
         Navigator.pop(context);
         if (res.ok) {
           showCustomAlert(context, 'Successfull payment', '');
@@ -94,7 +95,7 @@ class _Button extends StatelessWidget {
       shape: const StadiumBorder(),
       elevation: 0,
       color: const Color(0xff191A20),
-      child: Row(children: const [
+      child: const Row(children: [
         Icon(
           FontAwesomeIcons.solidCreditCard,
           color: Colors.white,

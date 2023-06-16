@@ -59,7 +59,6 @@ final data =
              ),
            ),
          ),
-         applePay: const PaymentSheetApplePay(merchantCountryCode: 'US'),
          merchantDisplayName: 'Flutter Stripe Store Demo',
          paymentIntentClientSecret: data.clientSecret,
          googlePay: PaymentSheetGooglePay(
