@@ -2,9 +2,6 @@
 
 StripePayments es una aplicación de ejemplo que permite realizar pagos utilizando la pasarela de pagos Stripe. La aplicación te permite seleccionar una tarjeta guardada, agregar una nueva tarjeta o pagar con Google Pay.
 
-## Capturas de pantalla
-
-_Puedes agregar capturas de pantalla de tu aplicación aquí._
 
 ## Características
 
@@ -47,7 +44,6 @@ flutter run
 1. Antes de ejecutar la aplicación, asegúrate de configurar las claves de API de Stripe. Puedes encontrar más información sobre cómo obtener las claves de API en la documentación oficial de Stripe.
 2. Una vez que tengas las claves de API, modifica el archivo `lib/stripe_service.dart` y reemplaza los valores de las variables `apiKey` y `publishableKey` con tus propias claves de API de Stripe.
 
-## Contribución
 
 Las contribuciones son bienvenidas. Si encuentras un problema o tienes una sugerencia de mejora, por favor abre un _issue_ o envía una solicitud de _pull request_.
 
